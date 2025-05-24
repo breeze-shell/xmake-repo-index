@@ -35,7 +35,8 @@ jobs:
 
       - name: Generate package index JSON
         run: |
-          xmake l xmake-repo/scripts/package.lua
+          cd xmake-repo
+          xmake l scripts/package.lua
 
       - name: Copy generated JSON to root
         run: |

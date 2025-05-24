@@ -1,0 +1,43 @@
+diff --git a/scripts/packages.lua b/scripts/packages.lua
+index cdb55c9a..7b6cbc6a 100644
+--- a/scripts/packages.lua
++++ b/scripts/packages.lua
+@@ -47,25 +47,29 @@ function main(opt)
+             instance._BASE = _load_package(basename, basedir, basefile)
+         end
+         if instance then
++            local supported_plats = {}
+             for _, plat in ipairs({"windows", "linux", "macosx", "iphoneos", "android", "mingw", "msys", "bsd", "wasm", "cross"}) do
+                 local archs = platform.archs(plat)
+                 if archs then
+-                    local package_archs = {}
+                     for _, arch in ipairs(archs) do
+                         if is_supported(instance, plat, arch, opt) then
+-                            table.insert(package_archs, arch)
++                            if not supported_plats[plat] then
++                                supported_plats[plat] = {}
++                            end
++                            table.insert(supported_plats[plat], arch)
+                         end
+                     end
+-                    if #package_archs > 0 then
+-                        packages[plat] = packages[plat] or {}
+-                        table.insert(packages[plat], {name = instance:name(), instance = instance, archs = package_archs, generic = #package_archs == #archs})
+-                    end
+                 end
+             end
++            local name = instance:name()
++            packages[name] = {}
++            packages[name].urls = instance:urls()
++            packages[name].versions = instance:versions()
++            packages[name].supported_plats = supported_plats
++            packages[name].configs = instance:configs()
++            packages[name].deps = instance:orderdeps()
+         end
+     end
+-    for _, packages_plat in pairs(packages) do
+-        table.sort(packages_plat, function(a, b) return a.name < b.name end)
+-    end
++    import("core.base.json").savefile("index.json", packages)
+     return packages
+ end

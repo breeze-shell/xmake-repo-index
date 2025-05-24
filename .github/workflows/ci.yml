@@ -1,0 +1,73 @@
+name: Build xmake package index
+permissions: write
+
+on:
+  schedule:
+    - cron: '0 * * * *' 
+  push:
+    branches:
+      - main 
+  workflow_dispatch: 
+
+jobs:
+  build_and_update_index:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          
+          fetch-depth: 0
+
+      - name: Install xmake
+        run: |
+          curl -fsSL https://xmake.io/shget.text | bash
+          echo "$HOME/.xmake/bin" >> $GITHUB_PATH
+          echo "XMAKE_PROGRAM_DIR=$HOME/.xmake" >> $GITHUB_ENV
+
+      - name: Clone xmake-repo
+        run: git clone https://github.com/xmake-io/xmake-repo.git
+
+      - name: Apply patch to xmake-repo
+        
+        run: |
+          cd xmake-repo
+          git apply ../patch.diff
+          cd ..
+
+      - name: Generate package index JSON
+        
+        
+        
+        run: |
+          xmake run xmake-repo/scripts/package.lua
+
+      - name: Copy generated JSON to root
+        
+        
+        run: |
+          if [ -f "xmake-repo/packages.json" ]; then
+            cp xmake-repo/packages.json ./packages.json
+          else
+            echo "Error: xmake-repo/packages.json not found after script execution."
+            
+            echo "Listing files in xmake-repo:"
+            ls -R xmake-repo
+            
+            echo "Listing files in current directory:"
+            ls -A
+            exit 1
+          fi
+
+      - name: Commit and push JSON file
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add ./packages.json
+          
+          if git diff --staged --quiet; then
+            echo "No changes to commit in packages.json"
+          else
+            git commit -m "Update xmake package index (packages.json)"
+            git push
+          fi

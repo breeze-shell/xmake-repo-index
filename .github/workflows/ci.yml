@@ -22,8 +22,6 @@ jobs:
       - name: Install xmake
         run: |
           curl -fsSL https://xmake.io/shget.text | bash
-          echo "$HOME/.xmake/bin" >> $GITHUB_PATH
-          echo "XMAKE_PROGRAM_DIR=$HOME/.xmake" >> $GITHUB_ENV
 
       - name: Clone xmake-repo
         run: git clone https://github.com/xmake-io/xmake-repo.git

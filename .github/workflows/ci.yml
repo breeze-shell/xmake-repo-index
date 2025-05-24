@@ -31,25 +31,18 @@ jobs:
       - name: Apply patch to xmake-repo
         
         run: |
-          cd xmake-repo
-          git apply ../patch.diff
-          cd ..
+          cp packages.lua xmake-repo/scripts/packages.lua
 
       - name: Generate package index JSON
-        
-        
-        
         run: |
           xmake run xmake-repo/scripts/package.lua
 
       - name: Copy generated JSON to root
-        
-        
         run: |
-          if [ -f "xmake-repo/packages.json" ]; then
-            cp xmake-repo/packages.json ./packages.json
+          if [ -f "xmake-repo/index.json" ]; then
+            cp xmake-repo/index.json ./index.json
           else
-            echo "Error: xmake-repo/packages.json not found after script execution."
+            echo "Error: xmake-repo/index.json not found after script execution."
             
             echo "Listing files in xmake-repo:"
             ls -R xmake-repo

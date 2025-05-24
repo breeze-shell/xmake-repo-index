@@ -16,18 +16,18 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          
           fetch-depth: 0
 
-      - name: Install xmake
-        run: |
-          curl -fsSL https://xmake.io/shget.text | bash
+      - name: Setup xmake
+        uses: xmake-io/github-action-setup-xmake@v1
+        with:
+          xmake-version: branch@master
+          actions-cache-folder: '.xmake-cache'
 
       - name: Clone xmake-repo
-        run: git clone https://github.com/xmake-io/xmake-repo.git
+        run: git clone --depth 1 https://github.com/xmake-io/xmake-repo.git
 
       - name: Apply patch to xmake-repo
-        
         run: |
           cp packages.lua xmake-repo/scripts/packages.lua
 

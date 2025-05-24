@@ -93,10 +93,12 @@ function main(opt)
                     local arch_num = 0
                     for _, arch in ipairs(archs) do
                         local arch_num_tmp = archs_str_to_num[arch]
+                        if is_supported(instance, plat, arch, opt) then
                         if arch_num_tmp then
                             arch_num = arch_num + archs_str_to_num[arch]
                         else
                             print("error: unknown architecture %s", arch)
+                        end
                         end
                     end
 

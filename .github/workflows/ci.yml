@@ -55,11 +55,11 @@ jobs:
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          git add ./packages.json
+          git add ./index.json
           
           if git diff --staged --quiet; then
-            echo "No changes to commit in packages.json"
+            echo "No changes to commit in index.json"
           else
-            git commit -m "Update xmake package index (packages.json)"
+            git commit -m "Update xmake package index (index.json)"
             git push
           fi

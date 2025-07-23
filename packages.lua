@@ -1,4 +1,5 @@
 -- imports
+import("core.base.semver")
 import("core.package.package")
 import("core.platform.platform")
 import("private.core.base.select_script")
@@ -39,6 +40,13 @@ function _load_package(packagename, packagedir, packagefile)
         -- deprecated
         return package.load_from_repository(packagename, nil, packagedir, packagefile)
     end
+end
+
+function _sort_versions(versions)
+    table.sort(versions, function(a, b)
+        return semver.compare(a, b) > 0
+    end)
+    return versions
 end
 
 -- the main entry
@@ -107,7 +115,7 @@ function main(opt)
                     local name = instance:name()
                     packages[name] = {}
                     packages[name].urls = instance:urls()
-                    packages[name].versions = instance:versions()
+                    packages[name].versions = _sort_versions(instance:versions())
                     packages[name].supported_plats = supported_plats
                     packages[name].configs = instance:configs()
                     packages[name].deps = instance:orderdeps()
@@ -121,4 +129,3 @@ function main(opt)
     end
     import("core.base.json").savefile("index.json", packages)
 end
-

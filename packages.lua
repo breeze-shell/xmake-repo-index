@@ -44,7 +44,7 @@ end
 
 function _sort_versions(versions)
     table.sort(versions, function(a, b)
-        return semver.compare(a, b) > 0
+        return semver.compare(a, b) < 0
     end)
     return versions
 end
